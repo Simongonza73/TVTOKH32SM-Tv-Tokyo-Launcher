@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="docs/assets/icon-512.png" width="96" alt="">
+<img src=".github/icon-512.png" width="96" alt="">
 
 # Free My TV
 
@@ -14,7 +14,7 @@ Open source. Built with Claude Code. One button to undo.
 > is adapted for the **TV Tokyo TVTOKH32SM** (32″, Android 9). It keeps the original MIT license and credits.
 > See [This fork](#this-fork) for what changed.
 
-[**freemytv.io**](https://freemytv.io) · [Install](#install) · [This fork](#this-fork) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Any TV](#any-tv) · [Make it yours](#make-it-yours)
+[Install](#install) · [This fork](#this-fork) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Any TV](#any-tv) · [Make it yours](#make-it-yours)
 
 <img src=".github/preview.webp" width="880" alt="The Free My TV home screen: a glass shelf of apps, trending picks, and a drawer with the weather and crypto prices">
 
@@ -241,8 +241,6 @@ It's your code, and Claude Code finds its way around it. Try:
 | [`web/tv.js`](web/tv.js) | The TV's apps and inputs, on LG and Samsung |
 | [`webos/build.py`](webos/build.py), [`webos/install.py`](webos/install.py) | The LG app package and its install |
 | [`tizen/build.py`](tizen/build.py) | The Samsung app package |
-
-The website ([freemytv.io](https://freemytv.io)) is in [`docs/`](docs): plain HTML, CSS and JS on GitHub Pages.
 
 ## Translations
 
