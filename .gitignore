@@ -1,0 +1,20 @@
+# Your settings and signing key stay on your machine
+config.properties
+*.keystore
+*.jks
+*.idsig
+
+# Build output
+out/
+*.apk
+*.ipk
+*.wgt
+__pycache__/
+*.pyc
+tools/.i18n-cache.json
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

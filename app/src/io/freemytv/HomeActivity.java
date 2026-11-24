@@ -1,0 +1,61 @@
+package io.freemytv;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.KeyEvent;
+
+/**
+ * The Free My TV home screen (Android's "Home" role). It runs in the :home process.
+ */
+public class HomeActivity extends Activity {
+    private HomeView home;
+    private int prefsVersion = Prefs.version;   // settings changed while we were away: start over
+
+    @Override protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Ui.init(this);
+        home = new HomeView(this);
+        setContentView(home);
+        getWindow().setBackgroundDrawable(null);
+    }
+
+    @Override protected void onResume() {
+        super.onResume();
+        if (prefsVersion != Prefs.version) {
+            prefsVersion = Prefs.version;
+            HomeData.get(this).settingsChanged();
+            recreate();   // a new language or city: draw everything again
+            return;
+        }
+        if (home != null) home.resume();
+    }
+
+    @Override protected void onPause() {
+        if (home != null) home.pause();
+        super.onPause();
+    }
+
+    /** Home button pressed on the home screen: back to the entry state (focus on the first app, sheet closed). */
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        if (home != null) home.reset(true);
+    }
+
+    @Override protected void onDestroy() {
+        if (home != null) home.destroy();
+        super.onDestroy();
+    }
+
+    @Override public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        if (level >= TRIM_MEMORY_COMPLETE) Recs.get(this).trim();
+    }
+
+    @Override public boolean dispatchKeyEvent(KeyEvent event) {
+        if (RemoteKeys.onKey(this, event)) return true;
+        if (home != null && home.onKey(event)) return true;
+        return super.dispatchKeyEvent(event);
+    }
+
+}

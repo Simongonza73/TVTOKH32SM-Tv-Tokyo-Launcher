@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Free My TV</string>
+    <string name="boot_home_service">Opens the Free My TV home screen as soon as the TV starts, instead of the factory launcher. It only reacts to the factory launcher appearing during the first minutes after power on.</string>
+    <string name="remote_key_service">Lets the app buttons on the remote (Netflix, YouTube, Prime Video, TCL Channel) open the apps you picked in Free My TV, from any app. It only reads those buttons.</string>
+</resources>
