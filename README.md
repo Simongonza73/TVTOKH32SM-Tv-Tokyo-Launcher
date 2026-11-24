@@ -29,12 +29,16 @@ cd TVTOKH32SM-Tv-Tokyo-Launcher
 The first run creates `config.properties`. Edit it, then build again:
 
 ```properties
-tmdb_key=              # optional
+# Optional: free TMDB API key
+tmdb_key=
+
 tmdb_region=US
 latitude=40.7128
 longitude=-74.0060
 city=
-version_code=2         # bump before every reinstall
+
+# Bump this before every reinstall
+version_code=2
 ```
 
 On Windows, run `run_build.bat`. The result is `FreeMyTV.apk` in the project folder.
