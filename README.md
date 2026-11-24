@@ -1,20 +1,20 @@
 <div align="center">
 
-<img src=".github/icon-512.png" width="96" alt="">
+<img src=".github/icon-512.png" width="96" alt="Free My TV icon">
 
 # Free My TV
 
 **A fast, ad-free home screen for Google TV, LG and Samsung TVs.**
 
 Trending picks from your own apps, the weather at a glance, and a look that follows the sunset.<br>
-Open source. Built with Claude Code. One button to undo.
+Open source. No root. One button to undo.
 
-> **This is a fork.** Free My TV is by [@simbasjungles](https://github.com/simbasjungles); this copy
-> ([Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher](https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher))
-> is adapted for the **TV Tokyo TVTOKH32SM** (32″, Android 9). It keeps the original MIT license and credits.
+> **This is a fork of [Free My TV](https://github.com/simbasjungles/free-my-tv).**
+> This copy ([Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher](https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher))
+> is adapted for the **TV Tokyo TVTOKH32SM** (32″, Android 9). The original MIT license and credits are kept.
 > See [This fork](#this-fork) for what changed.
 
-[Install](#install) · [This fork](#this-fork) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Any TV](#any-tv) · [Make it yours](#make-it-yours)
+[Requirements](#requirements) · [Quick start](#quick-start-android-tv--google-tv) · [This fork](#this-fork) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Configuration](#configuration) · [Troubleshooting](#troubleshooting)
 
 <img src=".github/preview.webp" width="880" alt="The Free My TV home screen: a glass shelf of apps, trending picks, and a drawer with the weather and crypto prices">
 
@@ -22,25 +22,24 @@ Open source. Built with Claude Code. One button to undo.
 
 ## What you get
 
-- **No ads.** No sponsored rows, banners or autoplaying promos. Not one.
-- **Your apps, front and center.** The streaming apps you actually use, on a glass shelf. Pick them and their order right on the TV.
-- **Trending, not sponsored.** Three fresh picks every hour from what's trending this week and the latest releases, only from apps you already have. Movies and Shows get their own tabs.
-- **Weather and markets, one press away.** The hour-by-hour forecast, sunrise and sunset, and live crypto prices.
-- **Light by day, dark by night.** It follows your city's real sunset, the way your phone does.
+- **No ads.** No sponsored rows, banners or autoplaying promos.
+- **Your apps, front and center.** The streaming apps you actually use, on a glass shelf. Pick them and their order on the TV.
+- **Trending, not sponsored.** Fresh picks from what is trending this week and the latest releases, only from apps you already have.
+- **Weather and markets, one press away.** Hour-by-hour forecast, sunrise and sunset, and live crypto prices.
+- **Light by day, dark by night.** The theme follows your city's real sunset.
 - **A screensaver to match.** Full-screen photos of the picks with a big glass clock.
-- **Fast.** 60 fps, every frame in 16.6 ms, on the TV's own chip. The home screen uses 96 MB of memory instead of 242 MB (−60%).<br><sub>Measured on a 98″ TCL Google TV running Android 14.</sub>
-- **Set up on the TV.** Language, your city, temperature, theme, the weather and prices cards, which coins, and the apps on the shelf, in Free My TV's own settings.
-- **Safe.** No root. Nothing is uninstalled. One button brings back the factory home screen.
+- **Set up on the TV.** Language, city, temperature, theme, weather/crypto cards, wallpapers and shelf apps in Free My TV's own settings.
+- **Safe.** No root. Nothing is uninstalled permanently. One button brings back the factory home screen.
 
 ## This fork
 
-This repository is a personal fork of [Free My TV](https://github.com/simbasjungles/free-my-tv), adapted for one TV and
-kept as a working example of adapting it for a low-end Android TV.
+This repository is a personal fork of Free My TV, adapted for one low-end Android TV and kept as a working example
+of adapting the launcher for a specific device.
 
-**The TV:** TV Tokyo **TVTOKH32SM**, 32″, Android 9 (API 28) on a HiSilicon Hi3751V351 (4× Cortex-A53, ~1 GB of RAM),
+**The TV:** TV Tokyo **TVTOKH32SM**, 32″, Android 9 (API 28) on a HiSilicon Hi3751V351 (4× Cortex-A53, ~1 GB RAM),
 remote-only (leanback). The factory launcher, `com.cultraview.launcher.technical.hs351`, stays installed and untouched.
 
-What this fork adds on top of the original:
+What this fork adds on top of upstream:
 
 - **[`BootHomeService.java`](app/src/io/freemytv/BootHomeService.java)** and
   **[`BootGate.java`](app/src/io/freemytv/BootGate.java)**: an accessibility service opens the home screen about 3 seconds
@@ -53,7 +52,7 @@ What this fork adds on top of the original:
 - **[`Style.java`](app/src/io/freemytv/Style.java)**: every color, size, radius and animation time in one file.
 - **Wallpapers and a RAM note in Settings**: None / Mountains / Aurora / Zenless 1–7, and a read-only explanation of
   Android's limits on listing other apps' processes.
-- **Trimmed to this TV**: fewer features than the current upstream (no Trakt, Immich, sleep timer, quick settings, etc.).
+- **Trimmed to this TV**: fewer features than current upstream (no Trakt, Immich, sleep timer, quick settings, etc.).
 
 Everything is reversible. To go back to the factory home screen and remove the boot service:
 
@@ -66,217 +65,391 @@ adb reboot
 The second line keeps the TV's own accessibility service (everything before the colon); never set it to an empty value.
 Uninstalling `io.freemytv` (`adb uninstall io.freemytv`) also returns to the factory launcher once the service is removed.
 
-## Install
+## Requirements
+
+### At a glance
+
+| Component | Version | Needed for | Notes |
+|---|---|---|---|
+| **TV** | Android TV / Google TV **8.0+ (API 26+)** | Android app | This fork targets Android 9 (API 28); compiled against API 34, target SDK 33 |
+| **JDK** | **17** (Eclipse Temurin recommended) | Android build | `build.sh` needs a JDK 17+; **use 17** — that is what CI uses |
+| **Android SDK** | **build-tools 34.0.0**, **platform android-34** | Android build | `aapt2`, `d8`, `zipalign`, `apksigner` |
+| **Android SDK platform-tools** | current | Install on TV | Provides `adb` |
+| **Git + Git Bash** | current | Windows build | `build.sh` needs bash, `sed`, `grep`, `find`, `cygpath` |
+| **Python** | 3.8+ | LG/Samsung builds, tools | Standard library only for the build/install scripts |
+| **OpenSSH** | current | LG install | `ssh` and `ssh-keygen` on `PATH` |
+| **Node.js** | 18+ (optional) | `tools/check.sh web` | Only to run the ES5 syntax check with `acorn` |
+| **Tizen Studio** | optional | Signing Samsung `.wgt` | Only needed for `tizen/build.py --sign` |
+| **TMDB key** | free, optional | Trending picks | The app still works without it |
+| **Watchmode key** | free, optional | Open a title inside its app | Picks open the streaming app without it |
+
+No Gradle, no Android Studio and no third-party Java libraries are needed. Android Studio is only an easy way to install
+the SDK; you can build everything from the command line.
+
+### Android build machine
+
+1. **Install a JDK 17** and set `JAVA_HOME` to its folder.
+
+   - Windows: [Eclipse Temurin 17](https://adoptium.net/temurin/releases/?version=17), then set
+     `JAVA_HOME=C:\Java\jdk-17` (or wherever it was installed).
+   - macOS: `brew install --cask temurin@17`
+   - Linux: install `openjdk-17-jdk` from your distribution.
+
+   Check it:
+   ```bash
+   java -version    # should print 17.x
+   javac -version   # should print 17.x
+   ```
+
+   > `build.sh` accepts JDK 17 or newer, but newer JDKs can emit class files that build-tools 34's `d8` does not
+   > understand. Use **JDK 17** to reproduce the CI build.
+
+2. **Install the Android SDK command-line tools**, then install the packages:
+
+   ```bash
+   sdkmanager "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+   ```
+
+   - macOS:
+     ```bash
+     brew install --cask android-commandlinetools android-platform-tools
+     sdkmanager "build-tools;34.0.0" "platforms;android-34"
+     ```
+   - Linux: install Android's command-line tools from your package manager, then run the `sdkmanager` line above.
+   - Windows: install the command-line tools in `C:\Android\Sdk` (the default in `run_build.bat`), then run:
+     ```bat
+     %ANDROID_HOME%\cmdline-tools\latest\bin\sdkmanager.bat "platform-tools" "build-tools;34.0.0" "platforms;android-34"
+     ```
+
+3. **Set `ANDROID_HOME`** to the SDK folder and add `platform-tools` to `PATH` (for `adb`).
+
+   ```bash
+   export ANDROID_HOME="$HOME/Library/Android/sdk"   # macOS example
+   export PATH="$ANDROID_HOME/platform-tools:$PATH"
+   ```
+
+   On Windows, `run_build.bat` already assumes:
+   ```bat
+   set "ANDROID_HOME=C:\Android\Sdk"
+   set "JAVA_HOME=C:\Java\jdk-17"
+   ```
+   Edit those two lines if your paths are different. It also expects Git Bash at
+   `C:\Program Files\Git\usr\bin\bash.exe` (or `bash` on `PATH`).
+
+4. **Verify** that `build.sh` can find the tools:
+   ```bash
+   echo "$ANDROID_HOME"     # must point to the SDK
+   ls "$ANDROID_HOME/build-tools"
+   ls "$ANDROID_HOME/platforms"
+   ```
+
+   `build.sh` uses the newest build-tools and platform it finds. CI explicitly uses **build-tools 34.0.0** and
+   **android-34**, so install those exact versions before sending a pull request.
+
+### Windows
+
+Use **Git Bash** (or `run_build.bat`, which calls it). Do not run `build.sh` from `cmd.exe` or PowerShell directly.
+
+```bat
+run_build.bat
+```
+
+The script sets `ANDROID_HOME`, `JAVA_HOME` and the Git Bash path, converts them with `cygpath` and runs `./build.sh`.
+`adb` is only needed to install the APK, not to build it.
+
+### LG and Samsung build machine
+
+- **Python 3.8+** is enough for `webos/build.py` and `tizen/build.py`; they use only the standard library.
+- **OpenSSH** (`ssh`, `ssh-keygen`) is needed by `webos/install.py` to reach the TV.
+- **Node.js** is only needed if you run the web checks (`tools/check.sh web`); the build itself does not use it.
+- **Tizen Studio** is only needed to sign a Samsung package with `tizen/build.py --sign <profile>`. The Python
+  installer talks SDB directly, so Tizen Studio is not needed to install.
+- **Pillow** is only needed if you regenerate art or symbols with `tools/make_art.py` / `tools/make_zones.py`.
+
+## Quick start (Android TV / Google TV)
 
 About ten minutes. You need a Google TV or Android TV (Android 8 or newer) and a computer on the same Wi-Fi.
 
-### The easy way: an AI assistant
+### 1. Prepare the TV
 
-1. **On the TV**, turn on developer mode: Settings → System → About → press *Android TV OS build* 7 times. Then Settings → System → Developer options → turn on **USB debugging**. Write down the TV's IP address (Settings → Network & Internet).
-2. **On your computer**, open an AI coding assistant ([Claude Code](https://claude.com/claude-code), Codex or Antigravity) and say:
-   > Install Free My TV (github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher) on my TV at 192.168.1.50. I live in Lisbon.
+1. Settings → System → About → press **Android TV OS build** 7 times.
+2. Settings → System → Developer options → turn on **USB debugging** (and **Network debugging** if your TV shows it).
+3. Note the TV's IP address: Settings → Network & Internet.
 
-   It downloads the code, installs the tools it needs, builds the app and puts it on your TV, and asks before anything important. Swap in your TV's IP and your city.
-3. **On the TV**, open *Free My TV* → *Home Screen* → *Free My TV*. That's when the TV asks *Allow USB debugging?* for Free My TV: tick *Always allow* and accept.
+### 2. Build
 
-### The manual way
+```bash
+git clone https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher.git
+cd TVTOKH32SM-Tv-Tokyo-Launcher
+./build.sh
+```
 
-1. **On the TV**, do step 1 above.
-2. **Tools:** a JDK (17+), the Android SDK command-line tools (build-tools 34, platform android-34) and adb. On a Mac:
-   ```bash
-   brew install --cask temurin android-commandlinetools android-platform-tools
-   sdkmanager "build-tools;34.0.0" "platforms;android-34"
-   ```
-   On Linux, get OpenJDK 17, Android's command-line tools and adb from your package manager, then run the same `sdkmanager` line. On Windows, use Git Bash (which Claude Code uses there) or WSL.
-3. **Build:**
-   ```bash
-   ./build.sh
-   ```
-   The first run creates `config.properties`. Set your city and your [TMDB key](#the-tmdb-key) there, then run it again.
-4. **Install:**
-   ```bash
-   adb connect 192.168.1.50:5555
-   adb install -r FreeMyTV.apk
-   ```
-   On TCL TVs, also let it run in the background (TCL blocks it by default, and the switch never starts):
-   ```bash
-   adb shell "appops set io.freemytv AUTO_START allow || appops set io.freemytv APP_AUTO_START allow"
-   ```
-5. **On the TV**, open *Free My TV* → *Home Screen* → *Free My TV*. The TV asks *Allow USB debugging?* once more, now for Free My TV itself: tick *Always allow* and accept.
+The first run creates `config.properties` from `config.example.properties`. Edit it (city and optional keys), then build
+again:
 
-## LG TVs (webOS)
+```bash
+./build.sh
+```
 
-The same home screen as an LG app: the picks, the glass shelf with your apps, the drawer with inputs, weather and prices, day and night, Home Settings and the shelf editor. It installs through LG's own Developer Mode, with nothing rooted or changed on the TV. LG's home screen stays where it is, and Free My TV is one press of a number key away.
+The result is **`FreeMyTV.apk`** in the repository root.
 
-You need an LG TV (webOS 3 or newer) and a computer on the same Wi-Fi, with Python 3.
+On Windows, run `run_build.bat` instead of `./build.sh` (it uses Git Bash internally).
 
-1. **On the TV**, open the LG Content Store and install **Developer Mode**. Sign in with a free [LG developer account](https://webostv.developer.lge.com), turn on **Dev Mode Status** (the TV restarts), then turn on **Key Server**. Write down the IP address and the passphrase it shows.
-2. **On your computer**, get the code and build. `config.properties` works as for Google TV (your city, your [TMDB key](#the-tmdb-key)):
-   ```bash
-   git clone https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher && cd TVTOKH32SM-Tv-Tokyo-Launcher
-   python3 webos/build.py
-   ```
-3. **Install.** The first time, it asks for the TV's passphrase; updates don't:
-   ```bash
-   python3 webos/install.py 192.168.1.50
-   ```
-4. **On the TV**, while Free My TV is open, hold a number key on the remote. From then on, that key opens it from anywhere.
+### 3. Install
 
-With an AI assistant, say *"Install Free My TV (github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher) on my LG TV at 192.168.1.50. I live in Lisbon."* It builds the app and hands you the install command, so you type the passphrase yourself.
+```bash
+adb connect 192.168.1.50:5555
+adb install -r FreeMyTV.apk
+```
 
-Developer Mode lasts about 40 days: open the Developer Mode app now and then and press **EXTEND**. To remove Free My TV, run `python3 webos/install.py 192.168.1.50 --uninstall`.
+On TCL TVs, also let the app run in the background (TCL blocks it by default, and the switch never starts):
 
-## Samsung TVs (Tizen)
+```bash
+adb shell "appops set io.freemytv AUTO_START allow || appops set io.freemytv APP_AUTO_START allow"
+```
 
-The same home screen as a Samsung app, with everything the LG one has: the picks, the shelf, the drawer with the inputs, the weather and the prices, day and night, and its own settings. It installs through Samsung's own Developer Mode, with nothing rooted or changed on the TV, and Samsung's home screen stays where it is.
+### 4. Make it the home screen
 
-You need a Samsung TV from 2017 or newer (Tizen 3+) and a computer on the same Wi-Fi.
+On the TV, open **Free My TV** → **Home Screen** → **Free My TV**. Android asks **Allow USB debugging?** for Free My TV
+itself: tick **Always allow** and accept. The app uses the TV's own ADB at `127.0.0.1:5555` to switch the home screen,
+the screensaver and the apps it turns off — nothing listens on the network.
 
-1. **On the TV**, open **Apps** and type `1 2 3 4 5` on the remote. Turn **Developer mode** on, type your computer's IP address in **Host PC IP**, and restart the TV.
-2. **On your computer**, download [TizenBrew Installer](https://github.com/reisxd/TizenBrewInstaller/releases/latest), the community's installer for Samsung TVs, open it and connect to your TV.
-3. **Install from GitHub:** type `simbasjungles/free-my-tv` (TizenBrew's upstream module). To install this fork instead, build it and use `tizen/install.py`, below. On 2023 and newer TVs it asks you to sign in to your Samsung account once, to sign the app for your TV.
-4. **Straight to it:** in the TV's settings, under Start Screen Options, turn on **Autorun Last App**: the TV turns on into Free My TV.
+For this fork, also enable the early boot service (keeps the TV's own accessibility service):
 
-This build takes your city from the TV's time zone. For your exact city and the trending picks, build it with your own `config.properties` and [TMDB key](#the-tmdb-key): open the folder in Claude Code and say *"Install Free My TV on my Samsung TV at 192.168.1.50. I live in Lisbon."* It sets up Samsung's tools, and on 2023 and newer TVs you sign in to your Samsung account in the browser to make the certificate. Your signed build installs with `python3 tizen/install.py 192.168.1.50`, which needs only Python: no Tizen Studio, and no Rosetta on Apple Silicon Macs.
+```bash
+adb shell settings put secure enabled_accessibility_services com.hisilicon.rmservice/com.hisilicon.rmservice.HiRMService:io.freemytv/.BootHomeService
+```
 
-## Settings
+### 5. Go back
 
-The first values come from `config.properties`, created by the first build (Google TV, LG and Samsung use the same file). Most of them can also be changed on the TV, in *Free My TV* → *Home Settings*, and the TV's choice wins:
+On the TV: **Free My TV** → **Home Screen** → **Original**. The factory home screen, screensaver and every app come back.
+The boot service is disabled separately with the command in [This fork](#this-fork).
+
+If the new home screen ever crashes three times in five minutes, it switches back by itself.
+
+## Configuration
+
+The first build creates `config.properties` (ignored by git) from [`config.example.properties`](config.example.properties).
+The same file is used by the Android, LG and Samsung builds. Most values can also be changed on the TV in
+**Free My TV → Home Settings**; the TV's choice wins.
 
 | Key | What it does | Default |
 |---|---|---|
-| `tmdb_key` | Your free TMDB key, for the picks | empty |
+| `tmdb_key` | Free TMDB key, for the picks | empty |
 | `tmdb_region` | Your country (two letters): which titles are on which app | `US` |
-| `watchmode_key` | Optional, free [Watchmode](https://api.watchmode.com/) key: a pick opens the title's page in its app | empty |
-| `latitude`, `longitude` | Your city, for the weather and the sunset | New York |
-| `city` | The name on the weather card | `Weather` |
+| `watchmode_key` | Optional free [Watchmode](https://api.watchmode.com/) key: a pick opens the title's page in its app | empty |
+| `latitude`, `longitude` | Your city, for weather and sunset | New York |
+| `city` | Name shown on the weather card | `Weather` |
 | `hide_animation` | Leave cartoons and anime out of the picks | `false` |
-| `language` | `auto` (follows the TV), or a language with a [translation](#translations) (`en`, `pt`, `es`, `de`, `ru`, `fr`, `ja`…) | `auto` |
+| `language` | `auto` (follows the TV), or `en`, `pt`, `es`, `de`, `ru`, `fr`, `ja`… | `auto` |
 | `show_crypto` | Show Binance crypto prices on home and screensaver | `true` |
 | `currency` | Crypto prices in `USD`, `EUR`, `BRL`… | `USD` |
 | `temperature` | `C`, `F` or `auto` | `auto` |
-| `disable_assistant` | Also turn off Google Assistant | `false` |
-| `hide_services` | Streaming services to leave out of the picks even when their app is on the TV (`netflix`, `prime`, `disney`…), comma separated; for apps the TV ships that you don't subscribe to. Google TV only | empty |
-| `hide_apps` | Apps to leave out of the shelf, All Apps and the picks, by id or name (part of it), comma separated; for apps the TV ships that can't be uninstalled, like Samsung's built-in Netflix. LG and Samsung only | empty |
+| `disable_assistant` | Also turn off Google Assistant (the remote's mic button stops working) | `false` |
+| `hide_services` | Streaming services to leave out of the picks even when their app is on the TV (`netflix`, `prime`, `disney`…), comma separated. Google TV only | empty |
+| `hide_apps` | Apps to leave out of the shelf, All Apps and the picks, by id or name (part of it), comma separated. LG and Samsung only | empty |
+| `version_code` | Android `versionCode`; **bump it before every reinstall** so `adb install -r` accepts the update | `2` |
+| `version_name` | Android `versionName` | `1.1` |
 
-Changed something? Run `./build.sh` and install again. Keep `freemytv.keystore`: updates are signed with it.
+Changed something? Run `./build.sh` and install again. Keep **`freemytv.keystore`**: updates must be signed with it.
 
 ### The TMDB key
 
-Free, and it takes two minutes: create an account at [themoviedb.org](https://www.themoviedb.org/signup), then open [Settings → API](https://www.themoviedb.org/settings/api) and request a developer key. Paste the *API Read Access Token* (or the *API Key*) after `tmdb_key=`. It's your key: `config.properties` stays out of git.
+Free, and it takes two minutes:
+
+1. Create an account at [themoviedb.org](https://www.themoviedb.org/signup).
+2. Open [Settings → API](https://www.themoviedb.org/settings/api) and request a developer key.
+3. Paste the **API Read Access Token** (or the **API Key**) after `tmdb_key=`.
+
+Without it, the home screen still works, just without the trending picks. Your key stays in `config.properties`, which is
+in `.gitignore`.
 
 ### Opening a title, not just its app (optional)
 
-With a free [Watchmode](https://api.watchmode.com/) key (`watchmode_key=` in `config.properties`), a pick opens its own page in the streaming app instead of the app's home. The free plan (2,500 credits a month) is enough: each title costs two requests the first time and is remembered after that. It works where the app takes the title's web address (tested: Prime Video and JioHotstar); where it doesn't, the pick just opens the app, as without a key.
+With a free [Watchmode](https://api.watchmode.com/) key in `watchmode_key=`, a pick opens its own page in the streaming
+app instead of the app's home. The free plan (2,500 credits a month) is enough: each title costs two requests the first
+time and is remembered after that. Where the app does not accept the title's web address, the pick just opens the app,
+as without a key.
 
-## Going back
+## LG TVs (webOS)
 
-On the TV: *Free My TV* → *Home Screen* → *Original*. The factory home screen, screensaver and every app come back exactly as they were. If the new home screen ever crashes three times in five minutes, it switches back by itself.
+The same home screen as an LG app: picks, the glass shelf, the drawer with inputs, weather, prices, day and night, Home
+Settings and the shelf editor. It installs through LG's own Developer Mode; nothing is rooted or changed on the TV. LG's
+home screen stays where it is, and Free My TV is one press of a number key away.
 
-To remove it for good, switch to *Original* first, then uninstall *Free My TV* (Settings → Apps). Uninstalled it while it was on? Install it again and pick *Original*: the list of what it turned off is kept in the TV's settings, so everything comes back.
+You need an LG TV (webOS 3 or newer), a computer on the same Wi-Fi, **Python 3** and **OpenSSH**.
 
-## What it changes
+1. **On the TV**, open the LG Content Store and install **Developer Mode**. Sign in with a free
+   [LG developer account](https://webostv.developer.lge.com), turn on **Dev Mode Status** (the TV restarts), then turn on
+   **Key Server**. Note the IP address and the passphrase it shows.
+2. **On the computer**, build the package:
+   ```bash
+   git clone https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher.git
+   cd TVTOKH32SM-Tv-Tokyo-Launcher
+   python3 webos/build.py
+   ```
+   `config.properties` works as for Android. The result is **`FreeMyTV-webos.ipk`**.
+3. **Install** (asks for the TV's passphrase the first time; updates do not):
+   ```bash
+   python3 webos/install.py 192.168.1.50
+   ```
+4. **On the TV**, while Free My TV is open, **hold a number key** on the remote. From then on, that key opens it from
+   anywhere.
 
-- It becomes the home screen and the screensaver.
-- It turns off, without uninstalling:
-  - the stock home screen and screensaver;
-  - Google TV's recovery home, Play Games and YouTube Music;
-  - on TCL TVs, the TCL Channel, messages, store demo, hotel menu, manuals, mirroring and logging apps;
-  - on Philco TVs, AI PONT (promo channels and app downloads) and the manual;
-  - on Multilaser TVs, Anoki's screen-content recognition (ACR), the store demo and the manual;
-  - on KTC-made TVs (NextStar), Anoki's screen-content recognition (ACR), the store demo and the manual;
-  - Google Assistant, only with `disable_assistant=true`.
-- On TCL TVs, the remote's Netflix, YouTube and Prime buttons keep working through a small accessibility service that only reads those buttons. Pick what each one opens in *Free My TV* → *Remote Buttons*; *Original* turns the service off. On Vestel-made TVs (F&U and other store brands) and Xiaomi (Formovie) projectors the same goes for the Netflix button, and on KTC-made TVs (NextStar) for the Tabii button. On Sony TVs, the BRAVIA CORE, Netflix, Disney+, Prime Video, YouTube and Crunchyroll buttons (and Google Play, on remotes that have it) can each open the app you pick, or keep Sony's default.
-- Picture, sound, inputs, remote pairing, Google services and the Play Store are on a protected list, checked before every change, and so are Android's own pieces and factory menus. Before anything goes off, the TV is asked whether its inputs or its remote's Input key depend on it; those stay on.
-- On Google TV, the setup app goes off before the stock home screen and comes back after it, so its recovery screen never takes over the Home button in between.
-- Apps that saved a Wi-Fi network are never turned off, since Android would erase the network. If the TV's first setup saved yours, the switch asks you to forget the network and connect again in Settings first (saved networks out of range don't show there; Claude Code can remove them).
+To preview the web app in a browser without a TV:
 
-## Any TV
+```bash
+python3 webos/build.py --preview
+# open out/webos/index.html, or serve out/webos
+```
 
-Free My TV runs on Google TV and Android TV: TCL, Sony, Hisense, Philips, Xiaomi, Vestel-made TVs (F&U), KTC-made TVs (NextStar) and more, plus streamers like Chromecast with Google TV, the Google TV Streamer, onn 4K and NVIDIA Shield. And on [LG](#lg-tvs-webos) and [Samsung](#samsung-tvs-tizen) TVs, as an app.
+Developer Mode lasts about 40 days: open the Developer Mode app now and then and press **EXTEND**. To remove Free My TV:
 
-**Any other TV:** plug a Google TV streamer into HDMI and free that one. Same steps, same home screen.
+```bash
+python3 webos/install.py 192.168.1.50 --uninstall
+```
 
-**A different brand or model:** ask Claude. Free My TV is made to be adapted by AI. Open the folder in Claude Code and say *"set it up for my Sony"*: it reads your TV, finds its home screen and its promo apps, updates the lists below and walks you through a test. [CLAUDE.md](CLAUDE.md) tells it how.
+If the TV's key changed, delete `~/.ssh/freemytv_webos_<IP>` and run the installer again.
 
-| What | Where |
-|---|---|
-| Apps to turn off | `DEBLOAT` in [`HomeMode.java`](app/src/io/freemytv/HomeMode.java) |
-| Apps never to touch | `PROTECTED` in the same file |
-| Apps on the shelf | `SHELF` in [`HomeApps.java`](app/src/io/freemytv/HomeApps.java) |
-| Your brand's live TV app | `LIVE_TV_APPS` in the same file |
+## Samsung TVs (Tizen)
 
-## Make it yours
+The same home screen as a Samsung app, with everything the LG one has: picks, shelf, inputs, weather, prices, day and
+night, and its own settings. It installs through Samsung's own Developer Mode; nothing is rooted or changed, and
+Samsung's home screen stays where it is.
 
-It's your code, and Claude Code finds its way around it. Try:
+You need a Samsung TV from **2017 or newer (Tizen 3+)** and a computer on the same Wi-Fi.
 
-- *"Add Crunchyroll to the shelf."*
-- *"Show the prices in euros."*
-- *"Add Catalan."*
-- *"Switch to the night look an hour after sunset."*
+1. **On the TV**, open **Apps** and type `1 2 3 4 5` on the remote. Turn **Developer mode** on, type your computer's IP
+   address in **Host PC IP**, and restart the TV.
+2. **On the computer**, build and sign the package:
+   ```bash
+   python3 tizen/build.py --sign <profile>
+   ```
+   `<profile>` is a certificate profile made in **Tizen Studio** (or Samsung's `tizen-sdk-skills`). If Tizen Studio is
+   installed somewhere other than `~/tizen-studio`, `~/tizen-sdk` or `C:\tizen-studio`, set `TIZEN_STUDIO` to its folder.
+   The result is **`FreeMyTV-tizen.wgt`**.
+3. **Install** (Python only; it speaks SDB directly, no Tizen Studio needed):
+   ```bash
+   python3 tizen/install.py 192.168.1.50
+   ```
+4. **Straight to it:** in the TV's settings, under Start Screen Options, turn on **Autorun Last App**; the TV turns on
+   into Free My TV.
+
+To build without signing (for inspection or TizenBrew):
+
+```bash
+python3 tizen/build.py
+```
+
+[**TizenBrew Installer**](https://github.com/reisxd/TizenBrewInstaller/releases/latest) can also install the app on
+2023 and newer TVs and signs it with your Samsung account. This Python installer is an alternative that works without
+Tizen Studio and without Rosetta on Apple Silicon.
+
+To remove it:
+
+```bash
+python3 tizen/install.py 192.168.1.50 --uninstall
+```
+
+If the TV says *different certificate*, remove the app on the TV (**Apps → Settings → Free My TV → Delete**) and install
+again with the same certificate as before. TVs only update an app signed with the same key.
+
+## Checks and CI
+
+What CI runs on every pull request ([`.github/workflows/check.yml`](.github/workflows/check.yml)) is also what you can
+run before pushing:
+
+```bash
+tools/check.sh           # everything
+tools/check.sh android   # only the Android build (needs JDK + Android SDK)
+tools/check.sh web       # translations, LG/Samsung packages and ES5 checks (needs Python 3 + Node)
+```
+
+The Android job uses **Temurin 17**, **build-tools 34.0.0** and **android-34**, so a build that passes locally with
+newer tools can still fail in CI. The web check validates the translation catalogues and makes sure `web/*.js` stays
+ES5-compatible, because webOS 3 and Tizen 3 run a Chromium from 2015–2017.
 
 ## How it works
 
-- **A plain Android app, no Gradle, no libraries.** [`build.sh`](build.sh) runs aapt2 → javac → d8 → zipalign → apksigner and makes a 2 MB APK.
-- **It uses the TV's own ADB, from inside the TV.** The app connects to `127.0.0.1:5555` with its own key (that's the *Allow USB debugging?* prompt) and runs the same commands you would: `cmd package set-home-activity`, `settings put secure screensaver_components`, `pm disable-user`. Nothing listens to the network.
-- **Drawn by hand on one Canvas**, with Android 13 shaders for the frosted glass and the sky (plain fills on Android 8 to 12, with lighter shadows and no GPU layers on 8 to 11 for their older GPUs).
-- **A safety net.** A watchdog in a separate process brings back the stock home screen after three crashes in five minutes, and a boot check keeps your choice after TV updates.
-- **On LG and Samsung, the same design in plain HTML, CSS and JavaScript** ([`web/`](web)), written for the Chromium of older TVs, with no frameworks. [`webos/build.py`](webos/build.py) packs it with `config.properties` into an `.ipk` without LG's tools, and [`webos/install.py`](webos/install.py) installs it through Developer Mode; on LG it lists and opens apps through the TV's own service bus (Luna), as LG's launcher does. [`tizen/build.py`](tizen/build.py) packs the same app into a Samsung `.wgt`, which uses Tizen's web APIs for the apps and the inputs. To preview it on a computer: `python3 webos/build.py --preview`, then open `out/webos/index.html` (a stand-in lists sample apps).
-- **Data** from TMDB (trending titles, new releases and which app streams what in your country), Open-Meteo (forecast, sunrise and sunset), and optionally Binance (24-hour prices when `show_crypto=true`).
+- **A plain Android app, no Gradle, no libraries.** [`build.sh`](build.sh) runs
+  `aapt2 → javac → d8 → zipalign → apksigner` and produces a small APK.
+- **It uses the TV's own ADB from inside the TV.** The app connects to `127.0.0.1:5555` with its own key (that is the
+  *Allow USB debugging?* prompt) and runs the same commands you would: `cmd package set-home-activity`,
+  `settings put secure screensaver_components`, `pm disable-user`. Nothing listens on the network.
+- **Drawn by hand on one Canvas**, with Android 13 shaders for the frosted glass and the sky (plain fills on Android
+  8–12, with lighter shadows on older GPUs).
+- **A safety net.** A watchdog in a separate process brings back the stock home screen after three crashes in five
+  minutes, and a boot check keeps your choice after TV updates.
+- **On LG and Samsung, the same design in plain HTML, CSS and JavaScript** ([`web/`](web)), written for the Chromium of
+  older TVs, with no frameworks. [`webos/build.py`](webos/build.py) packs it with `config.properties` into an `.ipk`
+  without LG's tools; on LG it lists and opens apps through the TV's own service bus (Luna).
+  [`tizen/build.py`](tizen/build.py) packs the same app into a Samsung `.wgt`.
+- **Data** from TMDB (trending, new releases, which app streams what in your country), Open-Meteo (forecast, sunrise and
+  sunset), and optionally Binance (24-hour prices when `show_crypto=true`).
 
-| File | What it is |
+### Project layout
+
+| Path | What it is |
 |---|---|
-| [`HomeView.java`](app/src/io/freemytv/HomeView.java) | The home screen |
-| [`HomeMode.java`](app/src/io/freemytv/HomeMode.java) | Switching between Free My TV and Original |
-| [`Adb.java`](app/src/io/freemytv/Adb.java) | The TV's own ADB, from inside the TV |
-| [`Recs.java`](app/src/io/freemytv/Recs.java) | The picks (TMDB) |
-| [`HomeData.java`](app/src/io/freemytv/HomeData.java) | Weather and prices |
-| [`HomeApps.java`](app/src/io/freemytv/HomeApps.java) | The shelf, inputs and All Apps |
-| [`DreamView.java`](app/src/io/freemytv/DreamView.java) | The screensaver |
-| [`SettingsActivity.java`](app/src/io/freemytv/SettingsActivity.java) | The settings screen (the app's icon) |
-| [`Prefs.java`](app/src/io/freemytv/Prefs.java) | Settings changed on the TV |
-| [`RemoteKeys.java`](app/src/io/freemytv/RemoteKeys.java) | The TCL remote's app buttons |
-| [`Watchdog.java`](app/src/io/freemytv/Watchdog.java) | The safety net |
-| [`web/home.js`](web/home.js) | The home screen on LG TVs |
+| [`app/src/io/freemytv/HomeView.java`](app/src/io/freemytv/HomeView.java) | The Android home screen |
+| [`app/src/io/freemytv/HomeMode.java`](app/src/io/freemytv/HomeMode.java) | Switching between Free My TV and Original |
+| [`app/src/io/freemytv/Adb.java`](app/src/io/freemytv/Adb.java) | The TV's own ADB, from inside the TV |
+| [`app/src/io/freemytv/Recs.java`](app/src/io/freemytv/Recs.java) | The picks (TMDB) |
+| [`app/src/io/freemytv/HomeData.java`](app/src/io/freemytv/HomeData.java) | Weather and prices |
+| [`app/src/io/freemytv/HomeApps.java`](app/src/io/freemytv/HomeApps.java) | The shelf, inputs and All Apps |
+| [`app/src/io/freemytv/DreamView.java`](app/src/io/freemytv/DreamView.java) | The screensaver |
+| [`app/src/io/freemytv/SettingsActivity.java`](app/src/io/freemytv/SettingsActivity.java) | The settings screen (the app's icon) |
+| [`app/src/io/freemytv/Prefs.java`](app/src/io/freemytv/Prefs.java) | Settings changed on the TV |
+| [`app/src/io/freemytv/Style.java`](app/src/io/freemytv/Style.java) | Colors, sizes, radii and animation times |
+| [`app/src/io/freemytv/Watchdog.java`](app/src/io/freemytv/Watchdog.java) | The safety net |
+| [`web/home.js`](web/home.js) | The home screen on LG and Samsung TVs |
 | [`web/tv.js`](web/tv.js) | The TV's apps and inputs, on LG and Samsung |
-| [`webos/build.py`](webos/build.py), [`webos/install.py`](webos/install.py) | The LG app package and its install |
-| [`tizen/build.py`](tizen/build.py) | The Samsung app package |
+| [`webos/build.py`](webos/build.py), [`webos/install.py`](webos/install.py) | The LG package and its installer |
+| [`tizen/build.py`](tizen/build.py), [`tizen/install.py`](tizen/install.py) | The Samsung package and its installer |
+| [`tools/check.sh`](tools/check.sh) | The checks CI runs |
+| [`app/assets/i18n/`](app/assets/i18n) | Translation catalogues |
 
-## Translations
+## Troubleshooting
 
-On Google TV, LG and Samsung, each language is one file, [`app/assets/i18n/<lang>.json`](app/assets/i18n), keyed by the
-English text in the code. *Automatic* follows the TV's language and uses any language that has a file (English otherwise); *Home
-Settings* → *Language* lists them all. Today: English, Portuguese, Spanish, German, French, Italian, Dutch, Polish,
-Swedish, Danish, Norwegian, Finnish, Czech, Romanian, Turkish, Russian, Ukrainian, Greek, Japanese, Korean, Simplified
-Chinese, Hindi, Indonesian, Vietnamese and Thai. Portuguese, Spanish, German, Russian and Thai were translated by hand and are the
-reference (fix them by hand); the others were machine-made, and corrections from native speakers are welcome.
-
-- **Add a language:** `python3 tools/translate.py --new ca`, then fill `app/assets/i18n/ca.json` by hand, or with
-  `ANTHROPIC_API_KEY` set, `python3 tools/translate.py --fill --lang ca` (only the strings go to the API).
-- **After changing text in the code:** `python3 tools/translate.py` lists what each language lacks; `--fill` translates
-  only that, `--prune` drops strings the code no longer uses.
-  Run `python3 tools/translate.py --check` to validate all catalogues without writing files.
-- Text built at runtime has placeholders (`"{n} min ago"`), so each language puts the words in its own order. A key
-  like `"unit|Automatic"` is the same English in another place, where a language may need another word.
-- Counts have plural forms: `"plural|one:{n} season|other:{n} seasons"` is translated with one form per plural
-  category the language uses (Russian `"one:{n} сезон|few:{n} сезона|many:{n} сезонов|other:{n} сезона"`, Japanese
-  just `"other:{n}シーズン"`), and Android's plural rules pick the one for each number.
-- **Limits:** right-to-left languages (Arabic, Hebrew, Persian) would need the layout mirrored, so they aren't there
-  yet. Chinese, Japanese, Korean and Hindi are drawn with the TV's system font (Inter has no such letters).
+| Problem | Fix |
+|---|---|
+| `Android SDK not found` | Set `ANDROID_HOME` (or `ANDROID_SDK_ROOT`) to the SDK folder; make sure `build-tools/` exists inside it |
+| `Android platform not found` | Run `sdkmanager "platforms;android-34"` |
+| `JDK not found` | Install JDK 17 and set `JAVA_HOME`; make sure `$JAVA_HOME/bin/javac` exists |
+| `d8` / `apksigner` not found on Windows | Use `run_build.bat` or Git Bash; `build.sh` adds `.bat` automatically |
+| `adb: command not found` | Add `$ANDROID_HOME/platform-tools` to `PATH` |
+| `INSTALL_FAILED_VERSION_DOWNGRADE` | Bump `version_code` in `config.properties` and rebuild |
+| Update rejected because of a signature | Always keep and reuse `freemytv.keystore`; uninstall the old app only if you accept losing its settings |
+| Icons/fonts missing in a Windows-built APK | Use the provided `build.sh`/`run_build.bat`; it fixes aapt2's backslash asset paths automatically |
+| The boot service stops after a TV update | Re-run the `enabled_accessibility_services` command in [This fork](#this-fork), keeping the TV's own service before the colon |
+| LG installer asks for a passphrase again | Delete `~/.ssh/freemytv_webos_<IP>` and run it again; the new passphrase is in Developer Mode |
+| LG Developer Mode expired | Open the Developer Mode app on the TV and press **EXTEND** |
+| Samsung says `different certificate` | Remove Free My TV on the TV, then install again with the same signing profile |
+| Samsung package is unsigned | Build with `python3 tizen/build.py --sign <profile>`; TVs only install signed packages |
+| `tools/check.sh web` fails on a JS file | The code must stay ES5; avoid `let`/`const`, arrow functions, `Promise`, `fetch`, `Map`, `includes`, etc. in `web/` |
 
 ## Privacy
 
-No accounts, no analytics, no tracking. The app talks to TMDB, Open-Meteo (with the coordinates you set, or your time zone's main city), and Binance only when `show_crypto=true`, and Watchmode only when you set a `watchmode_key`. Your settings stay on your computer and your TV.
+No accounts, no analytics, no tracking. The app talks to TMDB, Open-Meteo (with the coordinates you set, or your time
+zone's main city), Binance only when `show_crypto=true`, and Watchmode only when you set a `watchmode_key`. Your settings
+stay on your computer and your TV.
 
 ## Credits
 
+- Original project: [Free My TV](https://github.com/simbasjungles/free-my-tv) by [@simbasjungles](https://github.com/simbasjungles).
 - Built with [Claude Code](https://claude.com/claude-code).
-- The LG version builds on what [@danielthejoker18](https://github.com/danielthejoker18) found in [FreeMyTvWebOS](https://github.com/danielthejoker18/FreeMyTvWebOS) (MIT): installing through Developer Mode and opening apps through the TV's service bus.
-- On Samsung TVs it installs with [TizenBrew Installer](https://github.com/reisxd/TizenBrewInstaller) by [@reisxd](https://github.com/reisxd).
+- The LG version builds on what [@danielthejoker18](https://github.com/danielthejoker18) found in
+  [FreeMyTvWebOS](https://github.com/danielthejoker18/FreeMyTvWebOS) (MIT): installing through Developer Mode and opening
+  apps through the TV's service bus.
+- On Samsung TVs it can install with [TizenBrew Installer](https://github.com/reisxd/TizenBrewInstaller) by
+  [@reisxd](https://github.com/reisxd).
 - This product uses the TMDB API but is not endorsed or certified by [TMDB](https://www.themoviedb.org/).
-- Links to the titles in the streaming apps by [Watchmode](https://api.watchmode.com/).
-- Weather data by [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0). Prices from the [Binance](https://www.binance.com/) public API.
-- Icons: [Material Symbols](https://fonts.google.com/icons) (Apache 2.0). Font: [Inter](https://rsms.me/inter/) (SIL OFL 1.1). Coin logos: [cryptocurrency-icons](https://github.com/spothq/cryptocurrency-icons) (CC0). Samsung app logos: [Simple Icons](https://simpleicons.org) (CC0).
+- Links to titles in streaming apps by [Watchmode](https://api.watchmode.com/).
+- Weather data by [Open-Meteo.com](https://open-meteo.com/) (CC BY 4.0). Prices from the
+  [Binance](https://www.binance.com/) public API.
+- Icons: [Material Symbols](https://fonts.google.com/icons) (Apache 2.0). Font: [Inter](https://rsms.me/inter/)
+  (SIL OFL 1.1). Coin logos: [cryptocurrency-icons](https://github.com/spothq/cryptocurrency-icons) (CC0). Samsung app
+  logos: [Simple Icons](https://simpleicons.org) (CC0).
 - Not affiliated with Google, TCL, LG, Samsung or any streaming service. App names and logos belong to their owners.
 
 ## License
