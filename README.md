@@ -9,7 +9,12 @@
 Trending picks from your own apps, the weather at a glance, and a look that follows the sunset.<br>
 Open source. Built with Claude Code. One button to undo.
 
-[**freemytv.io**](https://freemytv.io) · [Install](#install) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Any TV](#any-tv) · [Make it yours](#make-it-yours)
+> **This is a fork.** Free My TV is by [@simbasjungles](https://github.com/simbasjungles); this copy
+> ([Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher](https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher))
+> is adapted for the **TV Tokyo TVTOKH32SM** (32″, Android 9). It keeps the original MIT license and credits.
+> See [This fork](#this-fork) for what changed.
+
+[**freemytv.io**](https://freemytv.io) · [Install](#install) · [This fork](#this-fork) · [LG TVs](#lg-tvs-webos) · [Samsung TVs](#samsung-tvs-tizen) · [Any TV](#any-tv) · [Make it yours](#make-it-yours)
 
 <img src=".github/preview.webp" width="880" alt="The Free My TV home screen: a glass shelf of apps, trending picks, and a drawer with the weather and crypto prices">
 
@@ -27,6 +32,40 @@ Open source. Built with Claude Code. One button to undo.
 - **Set up on the TV.** Language, your city, temperature, theme, the weather and prices cards, which coins, and the apps on the shelf, in Free My TV's own settings.
 - **Safe.** No root. Nothing is uninstalled. One button brings back the factory home screen.
 
+## This fork
+
+This repository is a personal fork of [Free My TV](https://github.com/simbasjungles/free-my-tv), adapted for one TV and
+kept as a working example of adapting it for a low-end Android TV.
+
+**The TV:** TV Tokyo **TVTOKH32SM**, 32″, Android 9 (API 28) on a HiSilicon Hi3751V351 (4× Cortex-A53, ~1 GB of RAM),
+remote-only (leanback). The factory launcher, `com.cultraview.launcher.technical.hs351`, stays installed and untouched.
+
+What this fork adds on top of the original:
+
+- **[`BootHomeService.java`](app/src/io/freemytv/BootHomeService.java)** and
+  **[`BootGate.java`](app/src/io/freemytv/BootGate.java)**: an accessibility service opens the home screen about 3 seconds
+  after power-on, because `BOOT_COMPLETED` only arrives after ~1 min 54 s on this TV. It only reacts to the factory
+  launcher's window, opens the home screen at most once per boot, only during the first 3 minutes, then goes quiet.
+  Enable it once, keeping the TV's own service:
+  ```bash
+  adb shell settings put secure enabled_accessibility_services com.hisilicon.rmservice/com.hisilicon.rmservice.HiRMService:io.freemytv/.BootHomeService
+  ```
+- **[`Style.java`](app/src/io/freemytv/Style.java)**: every color, size, radius and animation time in one file.
+- **Wallpapers and a RAM note in Settings**: None / Mountains / Aurora / Zenless 1–7, and a read-only explanation of
+  Android's limits on listing other apps' processes.
+- **Trimmed to this TV**: fewer features than the current upstream (no Trakt, Immich, sleep timer, quick settings, etc.).
+
+Everything is reversible. To go back to the factory home screen and remove the boot service:
+
+```bash
+adb shell cmd package set-home-activity com.cultraview.launcher.technical.hs351/com.cultraview.launcher.technical.open.ui.MainActivity
+adb shell settings put secure enabled_accessibility_services com.hisilicon.rmservice/com.hisilicon.rmservice.HiRMService
+adb reboot
+```
+
+The second line keeps the TV's own accessibility service (everything before the colon); never set it to an empty value.
+Uninstalling `io.freemytv` (`adb uninstall io.freemytv`) also returns to the factory launcher once the service is removed.
+
 ## Install
 
 About ten minutes. You need a Google TV or Android TV (Android 8 or newer) and a computer on the same Wi-Fi.
@@ -35,7 +74,7 @@ About ten minutes. You need a Google TV or Android TV (Android 8 or newer) and a
 
 1. **On the TV**, turn on developer mode: Settings → System → About → press *Android TV OS build* 7 times. Then Settings → System → Developer options → turn on **USB debugging**. Write down the TV's IP address (Settings → Network & Internet).
 2. **On your computer**, open an AI coding assistant ([Claude Code](https://claude.com/claude-code), Codex or Antigravity) and say:
-   > Install Free My TV (github.com/simbasjungles/free-my-tv) on my TV at 192.168.1.50. I live in Lisbon.
+   > Install Free My TV (github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher) on my TV at 192.168.1.50. I live in Lisbon.
 
    It downloads the code, installs the tools it needs, builds the app and puts it on your TV, and asks before anything important. Swap in your TV's IP and your city.
 3. **On the TV**, open *Free My TV* → *Home Screen* → *Free My TV*. That's when the TV asks *Allow USB debugging?* for Free My TV: tick *Always allow* and accept.
@@ -74,7 +113,7 @@ You need an LG TV (webOS 3 or newer) and a computer on the same Wi-Fi, with Pyth
 1. **On the TV**, open the LG Content Store and install **Developer Mode**. Sign in with a free [LG developer account](https://webostv.developer.lge.com), turn on **Dev Mode Status** (the TV restarts), then turn on **Key Server**. Write down the IP address and the passphrase it shows.
 2. **On your computer**, get the code and build. `config.properties` works as for Google TV (your city, your [TMDB key](#the-tmdb-key)):
    ```bash
-   git clone https://github.com/simbasjungles/free-my-tv && cd free-my-tv
+   git clone https://github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher && cd TVTOKH32SM-Tv-Tokyo-Launcher
    python3 webos/build.py
    ```
 3. **Install.** The first time, it asks for the TV's passphrase; updates don't:
@@ -83,7 +122,7 @@ You need an LG TV (webOS 3 or newer) and a computer on the same Wi-Fi, with Pyth
    ```
 4. **On the TV**, while Free My TV is open, hold a number key on the remote. From then on, that key opens it from anywhere.
 
-With an AI assistant, say *"Install Free My TV (github.com/simbasjungles/free-my-tv) on my LG TV at 192.168.1.50. I live in Lisbon."* It builds the app and hands you the install command, so you type the passphrase yourself.
+With an AI assistant, say *"Install Free My TV (github.com/Simongonza73/TVTOKH32SM-Tv-Tokyo-Launcher) on my LG TV at 192.168.1.50. I live in Lisbon."* It builds the app and hands you the install command, so you type the passphrase yourself.
 
 Developer Mode lasts about 40 days: open the Developer Mode app now and then and press **EXTEND**. To remove Free My TV, run `python3 webos/install.py 192.168.1.50 --uninstall`.
 
@@ -95,7 +134,7 @@ You need a Samsung TV from 2017 or newer (Tizen 3+) and a computer on the same W
 
 1. **On the TV**, open **Apps** and type `1 2 3 4 5` on the remote. Turn **Developer mode** on, type your computer's IP address in **Host PC IP**, and restart the TV.
 2. **On your computer**, download [TizenBrew Installer](https://github.com/reisxd/TizenBrewInstaller/releases/latest), the community's installer for Samsung TVs, open it and connect to your TV.
-3. **Install from GitHub:** type `simbasjungles/free-my-tv`. On 2023 and newer TVs it asks you to sign in to your Samsung account once, to sign the app for your TV.
+3. **Install from GitHub:** type `simbasjungles/free-my-tv` (TizenBrew's upstream module). To install this fork instead, build it and use `tizen/install.py`, below. On 2023 and newer TVs it asks you to sign in to your Samsung account once, to sign the app for your TV.
 4. **Straight to it:** in the TV's settings, under Start Screen Options, turn on **Autorun Last App**: the TV turns on into Free My TV.
 
 This build takes your city from the TV's time zone. For your exact city and the trending picks, build it with your own `config.properties` and [TMDB key](#the-tmdb-key): open the folder in Claude Code and say *"Install Free My TV on my Samsung TV at 192.168.1.50. I live in Lisbon."* It sets up Samsung's tools, and on 2023 and newer TVs you sign in to your Samsung account in the browser to make the certificate. Your signed build installs with `python3 tizen/install.py 192.168.1.50`, which needs only Python: no Tizen Studio, and no Rosetta on Apple Silicon Macs.
